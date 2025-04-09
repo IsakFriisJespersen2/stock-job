@@ -1,0 +1,32 @@
+services:
+  job:
+    build:
+      context: .
+    env_file:
+      - path: .env
+    # Keep container running idle
+    command: tail -f /dev/null
+
+  influxdb2:
+    image: influxdb:2
+    ports:
+      - 8086:8086
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: ${INFLUXDB_INIT_MODE:-setup}
+      DOCKER_INFLUXDB_INIT_USERNAME: admin 
+      DOCKER_INFLUXDB_INIT_PASSWORD: 12345678 
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUX_DB_TOKEN} 
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUX_DB_ORG} 
+    volumes:
+      - type: volume
+        source: influxdb2-data
+        target: /var/lib/influxdb2
+      - type: volume
+        source: influxdb2-config
+        target: /etc/influxdb2
+
+
+
+volumes:
+  influxdb2-data:
+  influxdb2-config:
